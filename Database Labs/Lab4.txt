@@ -1,0 +1,170 @@
+(C1)
+
+ALTER TABLE actors
+	ADD CONSTRAINT name_strings
+	CHECK (name ~ '^[A-Z][a-z]*(\s[A-Z][a-z]+)+'
+		   AND name ~* '(([a-z]*[a|e|i|o|u][a-z]*)(\s[a-z]*[a|e|i|o|u][a-z]*)*)'
+		   AND name ~* '(([a-z]*[b-df-hj-np-tv-z][a-z]*[b-df-hj-np-tv-z][a-z]*)(\s[a-z]*[b-df-hj-np-tv-z][a-z]*[b-df-hj-np-tv-z][a-z]*)*)'
+		   )
+
+
+(C2)
+
+ALTER TABLE actors
+	ADD CONSTRAINT actor_age
+	CHECK ((2020-birthyear) > 10 AND (2020-birthyear) < 100)
+
+(C3)
+
+ALTER TABLE actors
+	ADD CONSTRAINT a_gender
+	CHECK (gender='Male' OR gender='Female' OR gender='Non-binary')
+
+
+(C4)
+
+ALTER TABLE reviews
+	ADD CONSTRAINT ccheck
+	CHECK (char_length(review_text)<2001 AND (CHAR_LENGTH(review_text)-CHAR_LENGTH(REPLACE(review_text,'.', '')))<21 
+	AND (CHAR_LENGTH(review_text)-CHAR_LENGTH(REPLACE(review_text,' ', ''))<1000) 
+	AND (substring(review_text from 1) != LOWER(substring(review_text from 1)))
+)
+
+(C5)
+ALTER TABLE reviews
+	ADD CONSTRAINT review_num
+	CHECK(rating > 0.0 AND rating < 11.0)
+
+ALTER TABLE imdb
+	ADD CONSTRAINT imdb_rating_check
+	CHECK(imdb_rating > 0.0 AND imdb_rating < 11.0)
+
+(C7)
+	(C1)
+	INSERT INTO actors
+	VALUES(99, 'j89', 'Male', '2000')
+
+	(C2)
+	INSERT INTO actors
+	VALUES(99, 'Jim Bob', 'Male', '1000')
+
+	(C3)
+	INSERT INTO actors
+	VALUES(99, 'Jim Bob', 'Kale', '2000')
+
+	(C4)
+	INSERT INTO reviews
+	VALUES(99, 99, 6.0, 'h This is a really long review that is more than 2000 characters long. way. too. many. sentences. dont. 	you. think. i. certainly. do. i hope this is. ok. and that this will break. wow a thousand words is too much im not going to 	be able to test that. . . . . . sdfsfdsf. sf. sf. sf.d .')
+
+	(C5A)
+	INSERT INTO imdb
+	VALUES(1, 'G', 2)
+
+	(C5B)
+	INSERT INTO reviews
+	VALUES(1, 2, 'G', 'Text')
+
+(C8)
+	SELECT * FROM MOVIES r1, MOVIES r2 WHERE r1.title=r2.title and r1.genre=r2.genre and r1.director <> r2.director
+
+	Does not hold. Normally this should work however because there is a movie that was remade, 2 different movies share the same 	title and genre. So when sql checks this condition it return 2 different movies with different directors despite having 	identical titles and genres. 
+
+(C9)
+
+	SELECT * FROM ACTORS r1, ACTORS r2 WHERE r1.name=r2.name and r1.gender=r2.gender and r1.birthyear <> r2.birthyear
+
+	This holds and returns an empty set. This is because SQL checks for 2 people with the same name, same gender but different 	birthdays. Because no one in the table meets these requirements, no one is displayed. 
+
+(C10)
+
+	(C8) 
+	INSERT INTO movies
+	VALUES(10, 'Superbad', 'Comedy', 2020, 'Jim Bob')
+
+	(C9)
+	INSERT INTO actors
+	VALUES (14, 'Kurt Russell', 'Male', 2000)
+
+(Q1)
+
+	INSERT INTO actors
+	VALUES(15, 'Mike Myers', 'Male', 1967)
+	INSERT INTO movies
+	VALUES(20, 'Jaws 3d', 'comedy', 2000, 'Oprah')
+	INSERT INTO imdb
+	VALUES(20, 9, 50)
+	INSERT INTO movieroles
+	VALUES(15, 20, 'Fisherman')
+	INSERT INTO reviews
+	VALUES(4, 20, 9, 'It was goooood.')
+
+(Q2)
+
+	SELECT movies.title, (movies.movieid > 9) as "New Movie", imdb.imdb_rating, reviews.rating
+	FROM movies, imdb, reviews
+	WHERE movies.movieid = imdb.movieid AND movies.movieid = reviews.movieid
+
+	"title"					"New Movie"	"imdb_rating"	"rating
+	"The Thing"				false		8.1		10
+	"The Thing"				false		6.2		7
+	"1917"					false		8.4		10
+	"Jurassic Park"				false		8.1		9
+	"Alien"					false		8.4		6
+	"The Terminator"			false		8		8
+	"Ghostbusters"				false		7.8		10
+	"Sherlock Holmes: A Game of Shadows"	false		7.5		6
+	"Superbad"				false		7.6		7
+	"Jaws 3d"				true		9		9
+
+(Q3)
+
+	SELECT actors.name, (actors.name = 'Mike Myers') as "New Actor"
+	FROM actors
+
+	"name"				"New Actor"
+	"Kurt Russell"			false
+	"Sigourney Weaver"		false
+	"Linda Hamilton"		false
+	"Michael Biehn"			false
+	"Arnold Schwarzenegger"		false
+	"Jesse Eisenberg"		false
+	"Emma Stone"			false
+	"Woody Harrelson"		false
+	"Natalie Portman"		false
+	"Rachel McAdams"		false
+	"Jonah Hill"			false
+	"Jude Law"			false
+	"Mary Elizabeth Winstead"	false
+	"Kurt Russell"			false
+	"Mike Myers"			true
+
+(Q4)
+
+	SELECT movieroles.role, (movieroles.movieid = 20) as "New Role"
+	FROM movieroles
+
+	"role"			"New Role"
+	"MacReady"		false
+	"Kate Lloyd"		false
+	"Dr. John Watson"	false
+	"Irene Adler"		false
+	"Jules"			false
+	"Ripley"		false
+	"Sarah Connor"		false
+	"Kyle Reese"		false
+	"Terminator"		false
+	"Fisherman"		true
+
+(Q5)
+
+	This searches the database for the last initial of an actor born in 1967 and displays all of the genres they acted in in addition to the searches mentioned before. 
+
+	SELECT
+	LEFT(REVERSE(SPLIT_PART(REVERSE(name), ' ', 1)), 1) as last_initial,
+	regexp_split_to_table(movies.genre, ', ') AS "genres"
+	FROM actors, movies, movieroles
+	WHERE movies.movieid = movieroles.movieid 
+		and movieroles.actorid = actors.actorid
+		and actors.birthyear in (1967)
+	Group By actors.name, movies.genre;
+
