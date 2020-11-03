@@ -5,4 +5,4 @@
     
     
 # Additionally: Database Labs Folder
-    - contains examples of database creation/alteration/queries
+  - contains examples of database creation/alteration/queries
