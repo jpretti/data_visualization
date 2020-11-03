@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+        <script src="https://d3js.org/topojson.v2.min.js"></script>
+    </head>
+    
+    <body>
+        <h1 style = "text-align:center; color:#00000"><bold>Texas Population 2014</bold></h1>
+        
+        <!-- Radio button: one item selected only -->
+        
+        <div>
+          <p><strong>Color: </strong>
+            <button onclick="displayRed()">Red</button>
+            <button onclick="displayGreen()">Green</button>
+          </p>
+          <p><strong>Toggle: </strong>
+            <button onclick="displaylines()">Census Tract Boundary</button>
+            <button onclick="displaylines2()">State Boundary</button>
+          </p>
+        </div>
+        
+        <!--<svg width="960" height="1100"></svg>-->
+        
+        <script>
+
+        var margin = {top: 0, right: 0, bottom: 0, left: 0},
+            width = 960 - margin.left - margin.right,
+            height = 1100 - margin.top - margin.bottom;
+
+        var svg = d3.select("body").append("svg")
+            // setting the width of the svg based on inner dimension of margins
+            .attr("width", width + margin.left + margin.right)
+            //setting the height of the svg based on inner dimension of margins
+            .attr("height", height + margin.top + margin.bottom)
+
+        var path = d3.geoPath();
+        
+        var size = 0;
+            
+        displayRed();
+            
+            
+function displaylines2(){
+        
+        displaylines(); 
+    
+        var color = d3.scaleThreshold()
+            .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+            .range(d3.schemeOrRd[9]);
+
+        var x = d3.scaleSqrt()
+            .domain([0, 4500])
+            .rangeRound([440, 950]);
+
+        var g = svg.append("g")
+            .attr("class", "key")
+            .attr("transform", "translate(0,40)");
+            
+
+        g.selectAll("rect")
+          .data(color.range().map(function(d) {
+              d = color.invertExtent(d);
+              if (d[0] == null) d[0] = x.domain()[0];
+              if (d[1] == null) d[1] = x.domain()[1];
+              return d;
+            }))
+          .enter().append("rect")
+            .attr("height", 8)
+            .attr("x", function(d) { return x(d[0]); })
+            .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+            .attr("fill", function(d) { return color(d[0]); });
+
+        g.append("text")
+            .attr("class", "caption")
+            .attr("x", x.range()[0])
+            .attr("y", -6)
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
+            .text("Population per square mile");
+
+        g.call(d3.axisBottom(x)
+            .tickSize(13)
+            .tickValues(color.domain()))
+          .select(".domain")
+            .remove();
+        d3.json("https://raw.githubusercontent.com/jpretti/data/master/topo.json").then(function(topology) {
+
+              svg.append("g")
+                .selectAll("path")
+                .data(topojson.feature(topology, topology.objects.tracts).features)
+                .enter().append("path")
+                  .attr("fill", function(d) { return color(d.properties.density); })
+                  .attr("d", path);
+
+
+              svg.append("path")
+                  .datum(topojson.feature(topology, topology.objects.counties))
+                  .attr("fill", "none")
+                  .attr("stroke", "#000")
+                  .attr("stroke-opacity", 0.3)
+                  .attr("d", path); 
+            
+              svg.append("path")
+                  .datum(topojson.feature(topology, topology.objects.tracts))
+                  .attr("fill", "none")
+                  .attr("stroke", "white")
+                  .attr("stroke-opacity", 0)
+                  .attr("d", path); 
+            })
+}
+            
+function displaylines(){
+        
+    
+        var color = d3.scaleThreshold()
+            .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+            .range(d3.schemeOrRd[9]);
+
+        var x = d3.scaleSqrt()
+            .domain([0, 4500])
+            .rangeRound([440, 950]);
+
+        var g = svg.append("g")
+            .attr("class", "key")
+            .attr("transform", "translate(0,40)");
+            
+
+        g.selectAll("rect")
+          .data(color.range().map(function(d) {
+              d = color.invertExtent(d);
+              if (d[0] == null) d[0] = x.domain()[0];
+              if (d[1] == null) d[1] = x.domain()[1];
+              return d;
+            }))
+          .enter().append("rect")
+            .attr("height", 8)
+            .attr("x", function(d) { return x(d[0]); })
+            .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+            .attr("fill", function(d) { return color(d[0]); });
+
+        g.append("text")
+            .attr("class", "caption")
+            .attr("x", x.range()[0])
+            .attr("y", -6)
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
+            .text("Population per square mile");
+
+        g.call(d3.axisBottom(x)
+            .tickSize(13)
+            .tickValues(color.domain()))
+          .select(".domain")
+            .remove();
+        d3.json("https://raw.githubusercontent.com/jpretti/data/master/topo.json").then(function(topology) {
+
+              svg.append("g")
+                .selectAll("path")
+                .data(topojson.feature(topology, topology.objects.tracts).features)
+                .enter().append("path")
+                  .attr("fill", function(d) { return color(d.properties.density); })
+                  .attr("d", path);
+
+
+              svg.append("path")
+                  .datum(topojson.feature(topology, topology.objects.counties))
+                  .attr("fill", "none")
+                  .attr("stroke", "#000")
+                  .attr("stroke-opacity", 0.3)
+                  .attr("d", path); 
+            
+              svg.append("path")
+                  .datum(topojson.feature(topology, topology.objects.tracts))
+                  .attr("fill", "none")
+                  .attr("stroke", "#000")
+                  .attr("stroke-opacity", 1)
+                  .attr("d", path); 
+            })
+}
+        
+                     
+function displayRed(){
+        
+    
+        var color = d3.scaleThreshold()
+            .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+            .range(d3.schemeOrRd[9]);
+
+        var x = d3.scaleSqrt()
+            .domain([0, 4500])
+            .rangeRound([440, 950]);
+
+        var g = svg.append("g")
+            .attr("class", "key")
+            .attr("transform", "translate(0,40)");
+            
+
+        g.selectAll("rect")
+          .data(color.range().map(function(d) {
+              d = color.invertExtent(d);
+              if (d[0] == null) d[0] = x.domain()[0];
+              if (d[1] == null) d[1] = x.domain()[1];
+              return d;
+            }))
+          .enter().append("rect")
+            .attr("height", 8)
+            .attr("x", function(d) { return x(d[0]); })
+            .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+            .attr("fill", function(d) { return color(d[0]); });
+
+        g.append("text")
+            .attr("class", "caption")
+            .attr("x", x.range()[0])
+            .attr("y", -6)
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
+            .text("Population per square mile");
+
+        g.call(d3.axisBottom(x)
+            .tickSize(13)
+            .tickValues(color.domain()))
+          .select(".domain")
+            .remove();
+        d3.json("https://raw.githubusercontent.com/jpretti/data/master/topo.json").then(function(topology) {
+
+              svg.append("g")
+                .selectAll("path")
+                .data(topojson.feature(topology, topology.objects.tracts).features)
+                .enter().append("path")
+                  .attr("fill", function(d) { return color(d.properties.density); })
+                  .attr("d", path);
+
+
+              svg.append("path")
+                  .datum(topojson.feature(topology, topology.objects.counties))
+                  .attr("fill", "none")
+                  .attr("stroke", "#000")
+                  .attr("stroke-opacity", 0.3)
+                  .attr("d", path); 
+            })
+}
+
+function displayGreen(){  
+        
+    
+        var color = d3.scaleThreshold()
+            .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+            .range(d3.schemeBuGn[9]);
+
+        var x = d3.scaleSqrt()
+            .domain([0, 4500])
+            .rangeRound([440, 950]);
+
+        var g = svg.append("g")
+            .attr("class", "key")
+            .attr("transform", "translate(0,40)");
+            
+
+        g.selectAll("rect")
+          .data(color.range().map(function(d) {
+              d = color.invertExtent(d);
+              if (d[0] == null) d[0] = x.domain()[0];
+              if (d[1] == null) d[1] = x.domain()[1];
+              return d;
+            }))
+          .enter().append("rect")
+            .attr("height", 8)
+            .attr("x", function(d) { return x(d[0]); })
+            .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+            .attr("fill", function(d) { return color(d[0]); });
+
+        g.append("text")
+            .attr("class", "caption")
+            .attr("x", x.range()[0])
+            .attr("y", -6)
+            .attr("fill", "#000")
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
+            .text("Population per square mile");
+
+        g.call(d3.axisBottom(x)
+            .tickSize(13)
+            .tickValues(color.domain()))
+          .select(".domain")
+            .remove();
+
+        d3.json("https://raw.githubusercontent.com/jpretti/data/master/topo.json").then(function(topology) {
+
+          svg.append("g")
+            .selectAll("path")
+            .data(topojson.feature(topology, topology.objects.tracts).features)
+            .enter().append("path")
+              .attr("fill", function(d) { return color(d.properties.density); })
+              .attr("d", path);
+
+
+          svg.append("path")
+              .datum(topojson.feature(topology, topology.objects.counties))
+              .attr("fill", "none")
+              .attr("stroke", "#000")
+              .attr("stroke-opacity", 0.3)
+              .attr("d", path);    
+        })
+            
+}
+        </script>
+        
+        <p style = "text-align:left; color:#00000">
+            <a href="https://jpretti.github.io/cse163/">Click Here To View</a><br>
+            James Pretti<br>
+            Instructor: Suresh Lodha<br>
+            CSE 163: Data programming for Visualization<br>
+            Spring 2020</p>
+    </body>
+</html>
