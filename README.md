@@ -4,4 +4,5 @@
     Can be viewed at https://jpretti.github.io/cse163/
     
     
-# Additionally: Database Labs contains examples of database creation/alteration/queries
+# Additionally: Database Labs Folder
+    - contains examples of database creation/alteration/queries
