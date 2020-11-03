@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html> 
+  <head>
+    <!-- Meta Tag -->
+    <meta charset="utf-8">
+    <title>D3 Scatterplot</title>
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="scatterstylesheet.css">
+    <!-- D3.js Source -->
+    <script type= "text/javascript" src="https://d3js.org/d3.v5.min.js"></script>      
+  </head>
+  <body>
+    <h1 style = "text-align:center; color:steelblue"><bold> Energy Consumption, 2010 </bold></h1>
+    <!--Created a Reset Button to reset the graph after zooming or panning too much-->
+    <button>Reset</button>
+    <!-- Your D3.js code for making a Bar Graph -->
+    <script type="text/javascript" src="scatterplotV2020.js"></script>
+    <!-- Submission Info -->
+    <!--<h4>Created by "Your Name" </h4>-->
+      <h4>James Pretti</h4>
+    
+    <!--HTML code below for the tooltip layout.    -->
+    <!--Used a table with rows and columns to get everything to lineup    -->
+    <div id="tooltip" class="hidden">
+        <table>
+            <tr>
+                <!--Left Column-->
+                <td style="text-align: left"></td>
+                <!--Center Column-->
+                <td id="country" style="text-align: center"></td>
+                <!--Right Column-->
+                <td style="text-align: right"></td>
+            </tr>
+            <tr>
+                <!--Left Column-->
+                <td style="text-align: left">Population</td>
+                <!--Center Column-->
+                <td style="text-align: center">:</td>
+                <!--Right Column-->
+                <td id="population" style="text-align: right"></td>
+                <td>Million</td>
+            </tr>
+            <tr>
+                <!--Left Column-->
+                <td style="text-align: left">GDP</td>
+                <!--Center Column-->
+                <td style="text-align: center">:</td>
+                <!--Right Column-->
+                <td id="gdp" style="text-align: right"></td>
+                <td>Trillion</td>
+            </tr>
+            <tr>
+                <!--Left Column-->
+                <td style="text-align: left">EPC</td>
+                <!--Center Column-->
+                <td style="text-align: center">:</td>
+                <!--Right Column-->
+                <td id="epc" style="text-align: right"></td>
+                <td>Million</td>
+            </tr>
+            <tr>
+                <!--Left Column-->
+                <td style="text-align: left">Total</td>
+                <!--Center Column-->
+                <td style="text-align: center">:</td>
+                <!--Right Column-->
+                <td id="area" style="text-align: right"></td>
+                <td>Trillion</td>
+            </tr>
+        </table>
+    </div>
+      
+      
+      
+  </body>
+</html>

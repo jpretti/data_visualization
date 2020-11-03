@@ -1,0 +1,51 @@
+body {
+  font: 13px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+/*tootltip attributes*/
+#tooltip {
+    position: absolute;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    background-color: lightblue;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); pointer-events: none;
+}
+
+/*Hiding tooltip until it is hovered*/
+#tooltip.hidden { 
+    display: none;
+}
+
+
+/*Added feature to highlight which circle was hovered with mouse*/
+.dot:hover {
+    fill:orange;
+}
+
+/*Legend Rectangle*/
+rect {
+  fill:grey;
+  stroke:black;
+  opacity:0.8;}
+
+/*Legend Circles*/
+ellipse {
+  fill:white;
+  stroke:orange;
+  opacity:1;}
+
