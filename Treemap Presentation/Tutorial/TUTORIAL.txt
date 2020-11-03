@@ -1,0 +1,78 @@
+﻿Brief Tutorial for teemaps in d3 v5
+
+
+To create a treemap from start to finish, use the file in this folder titled tutorial.html
+
+
+Treemaps are used in order to show data in a unique way. Specifically, treemaps show data in a hierarchical order, meaning that each block is assigned a position within the treemap based on its parent/child relationship. Treemaps can be used to visual separate groups of relatable data within the same graph. 
+
+
+
+
+Below is a brief description of some of the key elements needed in order to load data into a treemap graph in d3 v5 using csv and json files. 
+
+
+CSV files:
+
+
+d3.stratify() is used to create a hierarchy out of the column data from a csv file. This allows treemap to later assign positional values based on the hierarchy of the data. 
+
+
+root.sum is used to get the value from the value column of the csv file and use it to determine the size of the treemap and the value for each node. Later, these values are used to determine the size and width of each rectangle housing each child. 
+
+
+JSON files:
+
+
+Unlike csv files, jason files are already in a format needed to import the hierarchy data. Instead of using d3.stratify, the following can be used:  
+
+
+d3.hierarchy() can be used with a json file instead of having to go through the process of reshaping each column into a hierarchy format like we did with the csv file using stratify. Something like the following can be used to do this:
+
+
+        var root = d3.hierarchy(data).sum(function(d){return d.value})
+
+
+
+
+
+
+Once the data is loaded…
+
+
+d3.treemap() is used to compute the position of each element in the hierarchy. The coordinates can then be added to the root object.
+
+
+
+
+
+
+
+
+Rectangle Creation: Lastly, rectangles need to be created in order to show how this data has been sorted and stored. In the following code, x0, x1, y0, y1 are based on the value column from the csv. They represent the top left and bottom right corners of each rectangle. The proportion of the space that a rectangle covers inside the parent is based on the value from the value column in the csv. 
+
+
+// This is where the rectangles are created
+  svg.selectAll("rect")
+    // grabing data for all the children aka rect's
+    .data(root.leaves())
+    .enter()
+    .append("rect")
+    
+      //x0, x1, y0, y1 are based on the value column and set
+        //when calling treemap. They represent the top left
+        // and bottom right corners of the rectangles
+
+
+      //this is where the location of each rect is set
+      .attr('x', function(d){return d.x0;})
+      .attr('y', function(d){return d.y0;})
+    
+      //The proportion of the space that a rectangle covers inside
+        //its parent is based on the values from column value in CSV
+    
+      //this is where the size of each rect is set
+      //depends on the value
+      .attr('width', function(d){return d.x1 - d.x0; })
+      .attr('height', function(d){return d.y1 - d.y0; })
+      //some additional styling in css file

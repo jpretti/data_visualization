@@ -1,0 +1,18 @@
+/*Style for the item text*/
+text {
+  /*text color set to white*/
+  fill:white;
+  /*thin outline in black to stand out*/
+  stroke:black;
+  /*lowered opacity to not be so bright*/
+  opacity:.9;
+  font-size: 20px;
+  stroke-width: .1;}
+
+/*Style for each rectangle*/
+rect {
+ /*black border around each rectangle*/
+  stroke: black;
+  /*filled in green color*/
+  fill: #69b3a2;
+}

@@ -1,0 +1,10 @@
+rect {
+    stroke: black;
+    stroke-width: 1.3;
+}
+
+/*added a larger stroke when item is moused over*/
+rect:hover {
+    stroke: black;
+    stroke-width: 2.3;
+}

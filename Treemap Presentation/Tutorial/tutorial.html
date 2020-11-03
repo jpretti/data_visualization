@@ -1,0 +1,141 @@
+<!--TUTORIAL-->
+<!--CODE adapted (but altered) from https://www.d3-graph-gallery.com/graph/treemap_basic.html-->
+
+
+
+
+<!--Step ONE-->
+<!--Create the html portion of the code similar to how we have done in the past-->
+<!--*note*: Make sure to use v5-->
+
+<!DOCTYPE html>
+<html> 
+  <head>
+    <!-- Meta Tag -->
+    <meta charset="utf-8">
+    <title>D3 Scatterplot</title>
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="basictreemapstylesheet.css">
+    <!-- D3.js Source -->
+    <script type= "text/javascript" src="https://d3js.org/d3.v5.min.js"></script>      
+  </head>
+  <body>
+    <h1 style = "text-align:center; color:steelblue"><bold> Grocery Store Sales (Fruit) </bold></h1>
+    <!-- Your D3.js code for making a Bar Graph -->
+    <div id="my_dataviz"></div>
+
+      
+<!--STEP TWO CREATE THE SCRIPT-->
+      
+<script>
+
+    //STEP THREE SET THE MARGINS FOR THE GRAPH
+    
+//This is where the dimensions of the graph are set
+var margin = {top: 10, right: 10, bottom: 10, left: 10},
+  width = 445 - margin.left - margin.right,
+  height = 445 - margin.top - margin.bottom;
+    
+    //STEP FOUR SET THE MARGINS AND CREATE THE SVG
+
+// creating the svg object 
+var svg = d3.select("body")
+.append("svg")
+  //setting the width and height of the svg
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+
+    //STEP FIVE CREATE A GROUP OF THE GRAPH
+
+//creating a group g
+.append("g")
+  //setting group to appear in svg
+  .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
+    
+    //STEP SIX LOAD THE CSV FILE. HERE I AM LOADING THE FILE FROM MY GITHUB
+
+//Loading a CSV file from my github
+d3.csv("https://raw.githubusercontent.com/jpretti/data/master/datasheet.csv").then(function(data){
+    
+    
+    //STEP SEVEN USE STRATIFY TO GET THE CSV FILE INTO A HIERARCHIAL FORMAT
+
+  // This is one of the key functions to allow a csv file to work
+  // Basically converts the csv into a json file "sort of"
+    //stratify is used to take column data from the csv
+    //and convert it into a hierarchy format with parent/child
+    //relationships.
+  var root = d3.stratify()
+    // Name of the child = column name in csv file
+    .id(function(d) { return d.name; })  
+    // Name of the parent = column parent in csv file
+    .parentId(function(d) { return d.parent; })
+    (data);
+    
+    //STEP EIGHT GET THE TOTAL VALUE, AND EACH ITEM VALUE FROM ROOT
+   
+  // getting the value from column value in the CSV
+  // this value will be used to determine the size of the table
+  root.sum(function(d){return +d.value})
+    
+    //STEP NINE USE d3.treemap IN ORDER TO SET THE COORDINATES OF EACH ITEM WITHIN THE GRAPH
+
+  // d3.treemap is another key function
+  // it computes the position of each element in a hierarchy
+  // The coordinates are added to the root object above
+  d3.treemap()
+    .size([width, height])
+    .padding(8)
+    (root);
+
+//used to check the leaves    
+console.log(root.leaves())
+
+    // STEP TEN CREATE EACH RECTANGE USING X0,X1,Y0,Y1 FOR THE DIMENSIONS
+    
+  // This is where the rectangles are created
+  svg.selectAll("rect")
+    // grabing data for all the children aka rect's
+    .data(root.leaves())
+    .enter()
+    .append("rect")
+    
+      //x0, x1, y0, y1 are based on the value column and set
+        //when calling treemap. They represent the top left
+        // and bottom right corners of the rectangles
+
+      //this is where the location of each rect is set
+      .attr('x', function(d){return d.x0;})
+      .attr('y', function(d){return d.y0;})
+    
+      //The proportion of the space that a rectangle covers inside
+        //its parent is based on the values from column value in CSV
+    
+      //this is where the size of each rect is set
+      //depends on the value
+      .attr('width', function(d){return d.x1 - d.x0; })
+      .attr('height', function(d){return d.y1 - d.y0; })
+      //some additional styling in css file
+      
+
+    //STEP ELEVEN CREATE TEXT TO GO IN EACH RECTANGLE 
+    
+  // and to add the text labels
+  svg.selectAll("text")
+    .data(root.leaves())
+    .enter()
+    //creating label for each leaf
+    .append("text")
+      // setting postion a little to the right
+      .attr("x", function(d){return d.x0+10})
+      // setting position a little lower
+      .attr("y", function(d){return d.y0+20})
+      // setting label to name of item from column name in csv
+      .text(function(d){return d.data.name})
+      //some additional styling in css file
+})
+</script>
+      
+  </body>
+</html>
